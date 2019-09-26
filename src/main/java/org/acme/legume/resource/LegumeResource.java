@@ -14,6 +14,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static javax.ws.rs.core.Response.Status.CREATED;
@@ -55,8 +56,14 @@ public class LegumeResource implements LegumeApi {
 
     @Fallback(fallbackMethod = "fallback")
     @Timeout(500)
-    public List<Legume> list() {
-        return repository.list();
+    public List<LegumeItem> list() {
+        return repository.list().stream()
+                .map(legume -> LegumeItem.builder()
+                        .id(legume.getId())
+                        .name(legume.getName())
+                        .description(legume.getDescription())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     /**
