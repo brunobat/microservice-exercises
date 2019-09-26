@@ -3,15 +3,17 @@ package org.acme.legume.resource;
 import org.acme.legume.data.LegumeItem;
 import org.acme.legume.data.LegumeNew;
 import org.acme.legume.model.Legume;
-import org.acme.legume.repository.LegumeRepository;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
 import static javax.ws.rs.core.Response.Status.CREATED;
@@ -21,8 +23,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 @ApplicationScoped
 public class LegumeResource implements LegumeApi {
 
-    @Inject
-    LegumeRepository repository;
+    private Map<String, Legume> repository = new ConcurrentHashMap<>();
 
     public Response provision() {
         final LegumeNew carrot = LegumeNew.builder()
@@ -52,20 +53,24 @@ public class LegumeResource implements LegumeApi {
     }
 
     public List<Legume> list() {
-        return repository.list();
+        return new ArrayList<>(repository.values());
     }
 
     private Optional<Legume> find(final String legumeId) {
-        return Optional.ofNullable(repository.find(legumeId));
+        return Optional.ofNullable(repository.get(legumeId));
     }
 
     private LegumeItem addLegume(final @Valid LegumeNew legumeNew) {
+        final String id = UUID.randomUUID().toString();
+
         final Legume legumeToAdd = Legume.builder()
+                .id(id)
                 .name(legumeNew.getName())
                 .description((legumeNew.getDescription()))
                 .build();
 
-        final Legume addedLegume = repository.add(legumeToAdd);
+        repository.put(id, legumeToAdd);
+        final Legume addedLegume = repository.get(id);
 
         final LegumeItem legumeItem = LegumeItem.builder()
                 .id(addedLegume.getId())
