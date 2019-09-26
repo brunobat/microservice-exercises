@@ -5,19 +5,15 @@ import org.acme.legume.data.LegumeNew;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Arrays.asList;
 import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @ApplicationScoped
 public class LegumeResource implements LegumeApi {
@@ -38,25 +34,8 @@ public class LegumeResource implements LegumeApi {
                 addLegume(zucchini))).build();
     }
 
-    public Response add(@Valid final LegumeNew legumeNew) {
-        return Response.status(CREATED).entity(addLegume(legumeNew)).build();
-    }
-
-    public Response delete(@NotEmpty final String legumeId) {
-        return find(legumeId)
-                .map(legume -> {
-                    repository.remove(legume.getId());
-                    return Response.status(NO_CONTENT).build();
-                })
-                .orElse(Response.status(NOT_FOUND).build());
-    }
-
     public List<LegumeItem> list() {
         return new ArrayList<>(repository.values());
-    }
-
-    private Optional<LegumeItem> find(final String legumeId) {
-        return Optional.ofNullable(repository.get(legumeId));
     }
 
     private LegumeItem addLegume(final @Valid LegumeNew legumeNew) {
