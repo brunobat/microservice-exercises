@@ -1,7 +1,7 @@
 package org.acme.legume.resource;
 
+import org.acme.legume.data.LegumeItem;
 import org.acme.legume.data.LegumeNew;
-import org.acme.legume.model.Legume;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -67,7 +67,7 @@ public interface LegumeApi {
             description = "Legume created",
             content = @Content(
                     mediaType = APPLICATION_JSON,
-                    schema = @Schema(implementation = Legume.class, ref = "error"))
+                    schema = @Schema(implementation = LegumeItem.class, ref = "error"))
     )
     @APIResponse(
             name = "notFound",
@@ -134,5 +134,5 @@ public interface LegumeApi {
             description = "Internal Server Error"
     )
     @GET
-    List<Legume> list();
+    List<LegumeItem> list();
 }
