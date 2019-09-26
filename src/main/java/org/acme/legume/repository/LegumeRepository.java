@@ -14,33 +14,42 @@ package org.acme.legume.repository;
 import org.acme.legume.model.Legume;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static javax.transaction.Transactional.TxType.REQUIRED;
+import static java.util.Optional.ofNullable;
+
 
 @ApplicationScoped
-@Transactional(REQUIRED)
 public class LegumeRepository {
 
-    @Inject
-    EntityManager manager;
+    private Map<String, Legume> manager = new ConcurrentHashMap<>();
 
     public void remove(final String legumeId) {
-        manager.remove(find(legumeId));
+        manager.remove(legumeId);
     }
 
     public List<Legume> list() {
-        return manager.createQuery("SELECT l FROM Legume l").getResultList();
+        return new ArrayList<>(manager.values());
     }
 
     public Legume find(final String legumeId) {
-        return manager.find(Legume.class, legumeId);
+        return manager.get(legumeId);
     }
 
-    public Legume add(final Legume legumeToAdd) {
-        return manager.merge(legumeToAdd);
+    public Legume add(final Legume legume) {
+
+        final Legume legumeToAdd = Legume.builder()
+                .id(ofNullable(legume.getId())
+                        .orElse(UUID.randomUUID().toString()))
+                .name(legume.getName())
+                .description(legume.getDescription())
+                .build();
+
+        manager.put(legumeToAdd.getId(), legumeToAdd);
+        return manager.get(legumeToAdd.getId());
     }
 }

@@ -9,7 +9,6 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.core.Response;
@@ -27,7 +26,6 @@ public class LegumeResource implements LegumeApi {
     @Inject
     LegumeRepository repository;
 
-    @Transactional
     public Response provision() {
         final LegumeNew carrot = LegumeNew.builder()
                 .name("Carrot")
@@ -42,12 +40,10 @@ public class LegumeResource implements LegumeApi {
                 addLegume(zucchini))).build();
     }
 
-    @Transactional
     public Response add(@Valid final LegumeNew legumeNew) {
         return Response.status(CREATED).entity(addLegume(legumeNew)).build();
     }
 
-    @Transactional
     public Response delete(@NotEmpty final String legumeId) {
         return find(legumeId)
                 .map(legume -> {

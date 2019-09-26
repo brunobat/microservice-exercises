@@ -1,19 +1,19 @@
 package org.acme.legume.health;
 
+import org.acme.legume.repository.LegumeRepository;
 import org.eclipse.microprofile.health.HealthCheck;
 import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.Readiness;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 
 @Readiness
 @ApplicationScoped
 public class DemoReady implements HealthCheck {
 
     @Inject
-    private EntityManager entityManager;
+    LegumeRepository repository;
 
     @Override
     public HealthCheckResponse call() {
@@ -38,6 +38,6 @@ public class DemoReady implements HealthCheck {
     }
 
     private int testConnection() {
-        return (int) entityManager.createNativeQuery("SELECT 1").getSingleResult();
+        return repository == null ? 0 : 1;
     }
 }

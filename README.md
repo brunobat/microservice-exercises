@@ -5,7 +5,6 @@
 - 3.0 Repository
 - 4.0 HealthCheck
 - 5.0 Fault Tolerance
-- 6.0 H2 + JPA
 
 
 ## Build and run tests:
