@@ -1,11 +1,11 @@
 # microservice-exercises
 
-- REST endpoint + DTOs
-- Entity
-- Repository
-- HealthCheck
-- Fault Tolerance
-- H2 + JPA
+- 1.0 REST endpoint + DTOs
+- 2.0 Entity
+- 3.0 Repository
+- 4.0 HealthCheck
+- 5.0 Fault Tolerance
+- 6.0 H2 + JPA
 
 
 ## Build and run tests:
