@@ -2,17 +2,18 @@ package org.acme.legume.resource;
 
 import org.acme.legume.data.LegumeItem;
 import org.acme.legume.data.LegumeNew;
+import org.acme.legume.model.Legume;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static javax.ws.rs.core.Response.Status.CREATED;
@@ -22,7 +23,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 @ApplicationScoped
 public class LegumeResource implements LegumeApi {
 
-    private Map<String, LegumeItem> repository = new ConcurrentHashMap<>();
+    private Map<String, Legume> repository = new ConcurrentHashMap<>();
 
     public Response provision() {
         final LegumeNew carrot = LegumeNew.builder()
@@ -52,24 +53,30 @@ public class LegumeResource implements LegumeApi {
     }
 
     public List<LegumeItem> list() {
-        return new ArrayList<>(repository.values());
+        return repository.values().stream()
+                .map(legume -> LegumeItem.builder()
+                        .id(legume.getId())
+                        .name(legume.getName())
+                        .description(legume.getDescription())
+                        .build())
+                .collect(Collectors.toList());
     }
 
-    private Optional<LegumeItem> find(final String legumeId) {
+    private Optional<Legume> find(final String legumeId) {
         return Optional.ofNullable(repository.get(legumeId));
     }
 
     private LegumeItem addLegume(final @Valid LegumeNew legumeNew) {
         final String id = UUID.randomUUID().toString();
 
-        final LegumeItem legumeToAdd = LegumeItem.builder()
+        final Legume legumeToAdd = Legume.builder()
                 .id(id)
                 .name(legumeNew.getName())
                 .description((legumeNew.getDescription()))
                 .build();
 
         repository.put(id, legumeToAdd);
-        final LegumeItem addedLegume = repository.get(id);
+        final Legume addedLegume = repository.get(id);
 
         final LegumeItem legumeItem = LegumeItem.builder()
                 .id(addedLegume.getId())
