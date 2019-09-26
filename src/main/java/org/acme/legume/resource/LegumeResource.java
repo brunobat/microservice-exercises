@@ -4,8 +4,6 @@ import org.acme.legume.data.LegumeItem;
 import org.acme.legume.data.LegumeNew;
 import org.acme.legume.model.Legume;
 import org.acme.legume.repository.LegumeRepository;
-import org.eclipse.microprofile.faulttolerance.Fallback;
-import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -53,22 +51,8 @@ public class LegumeResource implements LegumeApi {
                 .orElse(Response.status(NOT_FOUND).build());
     }
 
-    @Fallback(fallbackMethod = "fallback")
-    @Timeout(500)
     public List<Legume> list() {
         return repository.list();
-    }
-
-    /**
-     * To be used in case of exception or timeout
-     *
-     * @return a list of alternative legumes.
-     */
-    public List<LegumeItem> fallback() {
-        return asList(LegumeItem.builder()
-                .name("Failed Legume")
-                .description("Fallback answer due to timeout")
-                .build());
     }
 
     private Optional<Legume> find(final String legumeId) {
