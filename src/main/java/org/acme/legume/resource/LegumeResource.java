@@ -2,7 +2,6 @@ package org.acme.legume.resource;
 
 import org.acme.legume.data.LegumeItem;
 import org.acme.legume.data.LegumeNew;
-import org.acme.legume.model.Legume;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.validation.Valid;
@@ -23,7 +22,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 @ApplicationScoped
 public class LegumeResource implements LegumeApi {
 
-    private Map<String, Legume> repository = new ConcurrentHashMap<>();
+    private Map<String, LegumeItem> repository = new ConcurrentHashMap<>();
 
     public Response provision() {
         final LegumeNew carrot = LegumeNew.builder()
@@ -52,25 +51,25 @@ public class LegumeResource implements LegumeApi {
                 .orElse(Response.status(NOT_FOUND).build());
     }
 
-    public List<Legume> list() {
+    public List<LegumeItem> list() {
         return new ArrayList<>(repository.values());
     }
 
-    private Optional<Legume> find(final String legumeId) {
+    private Optional<LegumeItem> find(final String legumeId) {
         return Optional.ofNullable(repository.get(legumeId));
     }
 
     private LegumeItem addLegume(final @Valid LegumeNew legumeNew) {
         final String id = UUID.randomUUID().toString();
 
-        final Legume legumeToAdd = Legume.builder()
+        final LegumeItem legumeToAdd = LegumeItem.builder()
                 .id(id)
                 .name(legumeNew.getName())
                 .description((legumeNew.getDescription()))
                 .build();
 
         repository.put(id, legumeToAdd);
-        final Legume addedLegume = repository.get(id);
+        final LegumeItem addedLegume = repository.get(id);
 
         final LegumeItem legumeItem = LegumeItem.builder()
                 .id(addedLegume.getId())
